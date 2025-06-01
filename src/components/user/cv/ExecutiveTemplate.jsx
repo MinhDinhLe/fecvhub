@@ -12,11 +12,26 @@ const PROFICIENCY_LEVELS = {
   EXPERT: { label: 'Chuyên gia', color: '#d4380d' }
 };
 
+// Định nghĩa EDUCATION_LEVELS giống ClassicTemplate
+const EDUCATION_LEVELS = {
+  HIGH_SCHOOL: 'Trung học phổ thông',
+  COLLEGE: 'Cao đẳng',
+  UNIVERSITY: 'Đại học',
+  POSTGRADUATE: 'Thạc sĩ',
+  DOCTORATE: 'Tiến sĩ',
+  OTHER: 'Khác',
+};
+
 const sanitizeHTML = (html) => {
   return { __html: DOMPurify.sanitize(html || '') };
 };
 
 const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
+  // Fallback values to prevent undefined errors
+  const safeCandidateData = candidateData || {};
+  const safeSkills = Array.isArray(skills) ? skills : [];
+  const safeWorkHistory = Array.isArray(workHistory) ? workHistory : [];
+
   return (
     <div style={{ 
       backgroundColor: '#fff',
@@ -50,7 +65,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
               letterSpacing: '0.5px',
               fontWeight: 500
             }}>
-              {candidateData?.fullName}
+              {safeCandidateData?.fullName || 'Họ và tên'}
             </Title>
             <Title level={3} style={{ 
               margin: '8px 0 0',
@@ -59,7 +74,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
               fontStyle: 'italic',
               fontSize: '22px'
             }}>
-              {candidateData?.title || 'Chức danh'}
+              {safeCandidateData?.title || 'Chức danh'}
             </Title>
           </Col>
           <Col span={8} style={{ textAlign: 'right' }}>
@@ -73,7 +88,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
               boxShadow: '0 4px 12px rgba(212, 136, 6, 0.2)'
             }}>
               <img 
-                src={candidateData?.avatar || 'https://via.placeholder.com/140'} 
+                src={safeCandidateData?.avatar || 'https://via.placeholder.com/140'} 
                 alt="avatar"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
@@ -93,7 +108,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          {candidateData?.phone && (
+          {safeCandidateData?.phone && (
             <Col span={7}>
               <div style={{ 
                 display: 'flex', 
@@ -109,12 +124,12 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                   fontSize: '14px',
                   whiteSpace: 'nowrap'
                 }}>
-                  {candidateData.phone}
+                  {safeCandidateData.phone}
                 </Text>
               </div>
             </Col>
           )}
-          {candidateData?.email && (
+          {safeCandidateData?.email && (
             <Col span={10}>
               <div style={{ 
                 display: 'flex', 
@@ -130,12 +145,12 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                   fontSize: '14px',
                   whiteSpace: 'nowrap'
                 }}>
-                  {candidateData.email}
+                  {safeCandidateData.email}
                 </Text>
               </div>
             </Col>
           )}
-          {candidateData?.address && (
+          {safeCandidateData?.address && (
             <Col span={7}>
               <div style={{ 
                 display: 'flex', 
@@ -151,7 +166,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                   fontSize: '14px',
                   whiteSpace: 'nowrap'
                 }}>
-                  {candidateData.address}
+                  {safeCandidateData.address}
                 </Text>
               </div>
             </Col>
@@ -172,7 +187,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
           </Title>
           <div 
             className="ql-editor"
-            dangerouslySetInnerHTML={sanitizeHTML(candidateData?.description)}
+            dangerouslySetInnerHTML={sanitizeHTML(safeCandidateData?.description)}
             style={{ 
               fontSize: '14px',
               lineHeight: '1.8',
@@ -199,8 +214,8 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
               }}>
                 KINH NGHIỆM LÀM VIỆC
               </Title>
-              {workHistory.slice(0, 4).map((work, index) => (
-                <div key={work.id} style={{ 
+              {safeWorkHistory.length > 0 ? safeWorkHistory.map((work, index) => (
+                <div key={work.id || index} style={{ 
                   marginBottom: '25px',
                   position: 'relative',
                   paddingLeft: '25px'
@@ -220,7 +235,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                     fontFamily: "'Roboto', 'Noto Serif', serif",
                     fontSize: '18px'
                   }}>
-                    {work.position}
+                    {work.position || 'Chức danh'}
                   </Title>
                   <Text strong style={{ 
                     display: 'block',
@@ -228,7 +243,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                     color: '#d48806',
                     fontSize: '15px'
                   }}>
-                    {work.companyName}
+                    {work.companyName || 'Tên công ty'}
                   </Text>
                   <Text type="secondary" style={{ 
                     display: 'block',
@@ -236,8 +251,9 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                     fontStyle: 'italic',
                     fontSize: '13px'
                   }}>
-                    {new Date(work.startDate).toLocaleDateString('vi-VN')} - 
-                    {work.endDate ? new Date(work.endDate).toLocaleDateString('vi-VN') : 'Hiện tại'}
+                    {work.startDate 
+                      ? `${new Date(work.startDate).getFullYear()} - ${work.isCurrentJob ? 'Hiện tại' : work.endDate ? new Date(work.endDate).getFullYear() : 'Hiện tại'}`
+                      : 'Chưa cập nhật'}
                   </Text>
                   <div 
                     className="ql-editor"
@@ -245,16 +261,24 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                     style={{ 
                       fontSize: '14px', 
                       lineHeight: '1.6',
-                      maxHeight: '80px',
+                      maxHeight: '120px',
                       overflow: 'hidden',
                       color: '#595959'
                     }}
                   />
                 </div>
-              ))}
+              )) : (
+                <div style={{ 
+                  color: '#999', 
+                  fontStyle: 'italic',
+                  paddingLeft: '25px'
+                }}>
+                  Chưa có thông tin kinh nghiệm làm việc
+                </div>
+              )}
             </div>
 
-            {/* Education - Fixed height */}
+            {/* Education - Fixed height với dữ liệu giống ClassicTemplate */}
             <div style={{ height: '160px' }}>
               <Title level={3} style={{ 
                 color: '#262626',
@@ -272,11 +296,23 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                 fontFamily: "'Roboto', 'Noto Serif', serif",
                 fontSize: '16px'
               }}>
-                {candidateData?.educationLevel}
+                {EDUCATION_LEVELS[safeCandidateData?.educationLevel] || 'Trình độ học vấn'}
               </Title>
+              {/* Hiển thị thời gian học tập nếu có */}
+              {(safeCandidateData?.educationStartYear || safeCandidateData?.educationEndYear) && (
+                <Text type="secondary" style={{ 
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontStyle: 'italic',
+                  fontSize: '14px',
+                  color: '#d48806'
+                }}>
+                  {safeCandidateData.educationStartYear || 'N/A'} - {safeCandidateData.educationEndYear || 'N/A'}
+                </Text>
+              )}
               <div 
                 className="ql-editor"
-                dangerouslySetInnerHTML={sanitizeHTML(candidateData?.educationDescription)}
+                dangerouslySetInnerHTML={sanitizeHTML(safeCandidateData?.educationDescription)}
                 style={{ 
                   fontSize: '14px', 
                   lineHeight: '1.6',
@@ -308,7 +344,7 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
               maxHeight: '500px',
               overflow: 'auto'
             }}>
-              {skills.slice(0, 8).map(skill => (
+              {safeSkills.length > 0 ? safeSkills.slice(0, 8).map(skill => (
                 <div key={skill.id} style={{
                   padding: '15px',
                   border: '1px solid #f0f0f0',
@@ -328,7 +364,16 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
                     {PROFICIENCY_LEVELS[skill.proficiencyLevel]?.label}
                   </Tag>
                 </div>
-              ))}
+              )) : (
+                <div style={{ 
+                  color: '#999', 
+                  fontStyle: 'italic',
+                  textAlign: 'center',
+                  padding: '20px'
+                }}>
+                  Chưa có thông tin kỹ năng
+                </div>
+              )}
             </div>
           </Col>
         </Row>
@@ -347,4 +392,4 @@ const ExecutiveTemplate = ({ candidateData, skills, workHistory }) => {
   );
 };
 
-export default ExecutiveTemplate; 
+export default ExecutiveTemplate;

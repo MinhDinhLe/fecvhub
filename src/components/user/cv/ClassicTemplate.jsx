@@ -396,12 +396,7 @@ const ClassicTemplate = ({ candidateData, skills, workHistory, onUpdateProfile }
               </div>
               Học vấn
             </h3>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => setIsEducationModalVisible(true)}
-              style={{ color: '#5a7a6b' }}
-            />
+           
           </div>
           <div style={{ marginLeft: '55px' }}>
             <div style={{
@@ -423,19 +418,9 @@ const ClassicTemplate = ({ candidateData, skills, workHistory, onUpdateProfile }
                 fontWeight: 'bold',
                 fontSize: '14px'
               }}>
-                {safeCandidateData.educationStartYear && safeCandidateData.educationEndYear
-                  ? `${safeCandidateData.educationStartYear} - ${safeCandidateData.educationEndYear}`
-                  : 'Chưa cập nhật'}
+
               </span>
             </div>
-            <div
-              dangerouslySetInnerHTML={sanitizeHTML(safeCandidateData.educationDescription)}
-              style={{
-                fontSize: '14px',
-                lineHeight: '1.6',
-                color: '#666'
-              }}
-            />
           </div>
         </div>
 
@@ -465,16 +450,7 @@ const ClassicTemplate = ({ candidateData, skills, workHistory, onUpdateProfile }
               </div>
               Kinh nghiệm làm việc
             </h3>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setEditingWorkHistory(null);
-                workHistoryForm.resetFields();
-                setIsWorkHistoryModalVisible(true);
-              }}
-              style={{ color: '#5a7a6b' }}
-            />
+            
           </div>
           {safeWorkHistory.length > 0 ? safeWorkHistory.map((work) => (
             <div key={work.id} style={{ marginLeft: '55px', marginBottom: '25px' }}>
@@ -492,14 +468,6 @@ const ClassicTemplate = ({ candidateData, skills, workHistory, onUpdateProfile }
                 }}>
                   {work.position || 'Chưa cập nhật'}
                 </h4>
-                <div>
-                  <Button
-                    type="text"
-                    icon={<EditOutlined />}
-                    onClick={() => handleEditWorkHistory(work)}
-                    style={{ color: '#5a7a6b' }}
-                  />
-                </div>
               </div>
               <div style={{
                 fontSize: '14px',

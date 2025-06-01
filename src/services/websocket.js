@@ -22,7 +22,7 @@ class WebSocketService {
       }, this.connectionTimeout);
 
       try {
-        const socket = new SockJS(`https://fe123-qdj3.vercel.app/ws`);
+        const socket = new SockJS(`http://localhost:8080/ws`);
         this.stompClient = new Client({
           webSocketFactory: () => socket,
           debug: function (str) {

@@ -258,7 +258,7 @@ const Hero = () => {
             }}>
               {/* Main Image */}
               <img 
-                src="https://asset.cloudinary.com/dfoogsgjf/a2daf6433762a8e9bac7c37fe5da7324" 
+                src="https://scontent.fsgn10-2.fna.fbcdn.net/v/t39.30808-6/475544692_597077956504866_8150212697293512149_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=A1A5f56sSR8Q7kNvwGHQN35&_nc_oc=AdmorOZOvP3u5s6N4bGSBys-uCKuW3Y5XXaa4bbebaVlfSHwHqCX9cYQ-qm7vsJqRos&_nc_zt=23&_nc_ht=scontent.fsgn10-2.fna&_nc_gid=ktZlRm9Hcz7pJomfS2r1JQ&oh=00_AfJlnTXLwIykVaZpnX5gy-gED4EBA1AY3p3kQlq2xrWobw&oe=683DC98A" 
                 alt="Job Opportunities" 
                 style={{ 
                   width: '100%',

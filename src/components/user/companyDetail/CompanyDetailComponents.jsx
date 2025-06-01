@@ -117,7 +117,7 @@ const CompanyDetailInfo = ({ company }) => {
                 cover={
                     <img 
                         alt="Company Background"
-                        src={company.companyBanner || "https://via.placeholder.com/1200x400"}
+                        src={company.companyBanner || "https://res.cloudinary.com/dfoogsgjf/image/upload/v1748489107/ksbz2kk4ond1n5mqyej5.webp"}
                         style={{ height: '250px', objectFit: 'cover' }}
                     />
                 }

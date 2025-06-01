@@ -176,6 +176,7 @@ const JobDetailCombined = ({ jobId }) => {
         setIsModalVisible(true);
       }
     } catch (error) {
+      setIsModalVisible(true);
       console.error('Error fetching questions:', error);
       message.error('Có lỗi xảy ra khi tải bài kiểm tra');
     }
@@ -272,58 +273,85 @@ const JobDetailCombined = ({ jobId }) => {
   };
 
   const calculateProfileCompletion = (profile, job) => {
-    let totalScore = 0;
-
-    // Tính điểm kinh nghiệm (40%)
-    if (profile.experienceLevel && job.requiredExperienceLevel) {
-      const experienceLevels = {
-        'NO_EXPERIENCE': 0,
-        'LESS_THAN_1_YEAR': 1,
-        'ONE_TO_THREE_YEARS': 2,
-        'THREE_TO_FIVE_YEARS': 3,
-        'FIVE_TO_TEN_YEARS': 4,
-        'MORE_THAN_TEN_YEARS': 5
-      };
-
-      const candidateExpLevel = experienceLevels[profile.experienceLevel] || 0;
-      const requiredExpLevel = experienceLevels[job.requiredExperienceLevel] || 0;
-
-      const expScore = candidateExpLevel >= requiredExpLevel ? 40 : (candidateExpLevel / requiredExpLevel) * 40;
-      totalScore += expScore;
-    }
-
-    if (profile.expectedSalary && job.salary) {
-      const salaryDifference = Math.abs(profile.expectedSalary - job.salary);
-      const allowedDifference = job.salary * 0.2;
-
-      const salaryScore = salaryDifference <= allowedDifference ? 20 : (1 - (salaryDifference / job.salary)) * 20;
-      totalScore += Math.max(0, salaryScore);
-    }
-
-    if (profile.candidateSkills && job.skills) {
-      const requiredSkillNames = job.skills.map(skill => skill.skillName.toLowerCase());
-      const matchedSkills = [];
+    try {
+      let totalScore = 0;
   
-      profile.candidateSkills.forEach(skill => {
-        const skillName = skill.skillName.toLowerCase();
-        if (requiredSkillNames.includes(skillName)) {
-          matchedSkills.push(skillName);
+      // Tính điểm kinh nghiệm (40%)
+      if (profile.experienceLevel && job.requiredExperienceLevel) {
+        const experienceLevels = {
+          'NO_EXPERIENCE': 0,
+          'LESS_THAN_1_YEAR': 1,
+          'ONE_TO_THREE_YEARS': 2,
+          'THREE_TO_FIVE_YEARS': 3,
+          'FIVE_TO_TEN_YEARS': 4,
+          'MORE_THAN_TEN_YEARS': 5
+        };
+  
+        const candidateExpLevel = experienceLevels[profile.experienceLevel] ?? 0;
+        const requiredExpLevel = experienceLevels[job.requiredExperienceLevel] ?? 0;
+  
+        let expScore = 0;
+        if (requiredExpLevel > 0) {
+          expScore = candidateExpLevel >= requiredExpLevel
+            ? 40
+            : (candidateExpLevel / requiredExpLevel) * 40;
+        } else {
+          expScore = candidateExpLevel > 0 ? 40 : 0;
         }
-      });
   
-      const skillScore = (matchedSkills.length / requiredSkillNames.length) * 40;
-      totalScore += skillScore;
+        totalScore += expScore;
+      }
   
-      console.log("Matched Skills:", matchedSkills);
-      console.log("Skill Score:", skillScore);
-    } else {
-      console.warn("Missing candidateSkills or job.skills");
+      // Tính điểm lương kỳ vọng (20%)
+      if (profile.expectedSalary && job.salary) {
+        const salaryDifference = Math.abs(profile.expectedSalary - job.salary);
+        const allowedDifference = job.salary * 0.2;
+  
+        let salaryScore = 0;
+        if (job.salary !== 0) {
+          salaryScore = salaryDifference <= allowedDifference
+            ? 20
+            : (1 - (salaryDifference / job.salary)) * 20;
+        }
+  
+        totalScore += Math.max(0, salaryScore);
+      }
+  
+      // Tính điểm kỹ năng (40%)
+      if (profile.candidateSkills && job.skills) {
+        const requiredSkillNames = job.skills.map(skill => skill.skillName.toLowerCase());
+        const matchedSkills = [];
+  
+        profile.candidateSkills.forEach(skill => {
+          const skillName = skill.skillName.toLowerCase();
+          if (requiredSkillNames.includes(skillName)) {
+            matchedSkills.push(skillName);
+          }
+        });
+  
+        let skillScore = 0;
+        if (requiredSkillNames.length > 0) {
+          skillScore = (matchedSkills.length / requiredSkillNames.length) * 40;
+        }
+  
+        totalScore += skillScore;
+  
+        console.log("Matched Skills:", matchedSkills);
+        console.log("Skill Score:", skillScore);
+      } else {
+        console.warn("Missing candidateSkills or job.skills");
+      }
+  
+      console.log("Total Score:", totalScore);
+  
+      if (isNaN(totalScore)) return 0;
+  
+      return Math.floor(totalScore);
+    } catch (exception) {
+      return 0;
     }
-
-
-    return Math.floor(totalScore);
-    // return Math.floor(100);
   };
+  
 
   const [completionPercentage, setCompletionPercentage] = useState(0);
 

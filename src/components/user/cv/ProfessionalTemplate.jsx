@@ -1,254 +1,249 @@
 import React from 'react';
-import { Typography, Row, Col, Progress, Tag } from 'antd';
-import { PhoneOutlined, MailOutlined, HomeOutlined, GlobalOutlined, UserOutlined } from '@ant-design/icons';
+import { Typography, Row, Col, Divider } from 'antd';
+import { CalendarOutlined, PhoneOutlined, MailOutlined, FacebookOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import DOMPurify from 'dompurify';
 
 const { Title, Text } = Typography;
-
-const PROFICIENCY_LEVELS = {
-  BEGINNER: { label: 'Cơ bản', color: '#69c0ff', percent: 33 },
-  INTERMEDIATE: { label: 'Trung bình', color: '#40a9ff', percent: 66 },
-  ADVANCED: { label: 'Nâng cao', color: '#1890ff', percent: 100 },
-  EXPERT: { label: 'Chuyên gia', color: '#096dd9', percent: 100 }
-};
 
 const sanitizeHTML = (html) => {
   return { __html: DOMPurify.sanitize(html || '') };
 };
 
-const ProfessionalTemplate = ({ candidateData, skills, workHistory }) => {
+const ProfessionalTemplate = ({ candidateData, workHistory, skills }) => {
+  // Define proficiency levels with colors
+  const PROFICIENCY_LEVELS = {
+    BEGINNER: { label: 'Cơ bản', color: '#ff9f43' }, // Warm orange
+    INTERMEDIATE: { label: 'Trung bình', color: '#f4a261' }, // Matching the header color
+    ADVANCED: { label: 'Nâng cao', color: '#e76f51' }, // Warm coral
+    EXPERT: { label: 'Chuyên gia', color: '#d00000' }, // Deep red
+  };
+
+  // Safe skills array to handle undefined skills
+  const safeSkills = skills || [];
+
   return (
     <div style={{ 
-      backgroundColor: '#fff',
+      backgroundColor: '#f5e8c7', 
       width: '794px',
       height: '1123px',
       margin: '0 auto',
+      overflow: 'hidden',
       position: 'relative',
-      overflow: 'hidden'
+      padding: '40px',
+      fontFamily: 'Arial, sans-serif'
     }}>
-      {/* Header Background */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '200px',
-        background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
-        zIndex: 1
-      }} />
+      <Row gutter={40}>
+        {/* Left Column - Personal Info and Avatar */}
+        <Col span={8} style={{ 
+          textAlign: 'center',
+          backgroundColor: 'rgba(245, 232, 199, 0.8)',
+          padding: '20px',
+          borderRadius: '10px'
+        }}>
+          {/* Avatar */}
+          <div style={{ 
+            width: '120px',
+            height: '120px',
+            margin: '0 auto 20px',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: '4px solid #f4a261'
+          }}>
+            <img 
+              src={candidateData?.avatar || 'https://via.placeholder.com/120'} 
+              alt="avatar"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
 
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, padding: '40px' }}>
-        <Row gutter={[40, 40]}>
-          {/* Header Section - Fixed height */}
-          <Col span={24}>
-            <Row align="middle" gutter={24}>
-              <Col>
-                <div style={{ 
-                  width: '150px',
-                  height: '150px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  border: '4px solid #fff',
-                  boxShadow: '0 0 20px rgba(0,0,0,0.1)'
-                }}>
-                  <img 
-                    src={candidateData?.avatar || 'https://via.placeholder.com/150'} 
-                    alt="avatar"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-              </Col>
-              <Col flex="1">
-                <Title style={{ 
-                  color: '#fff',
-                  margin: '0 0 8px',
-                  fontSize: '32px',
-                  fontWeight: '500'
-                }}>
-                  {candidateData?.fullName}
-                </Title>
-                <Title level={3} style={{ 
-                  color: '#fff',
-                  margin: '0 0 16px',
-                  fontWeight: '400',
-                  opacity: 0.9,
-                  fontSize: '20px'
-                }}>
-                  {candidateData?.title || 'Chức danh'}
-                </Title>
-                <Row gutter={16}>
-                  {candidateData?.phone && (
-                    <Col>
-                      <Text style={{ color: '#fff', display: 'flex', alignItems: 'center' }}>
-                        <PhoneOutlined style={{ marginRight: '8px' }} />
-                        {candidateData.phone}
-                      </Text>
-                    </Col>
-                  )}
-                  {candidateData?.email && (
-                    <Col>
-                      <Text style={{ color: '#fff', display: 'flex', alignItems: 'center' }}>
-                        <MailOutlined style={{ marginRight: '8px' }} />
-                        {candidateData.email}
-                      </Text>
-                    </Col>
-                  )}
-                  {candidateData?.address && (
-                    <Col>
-                      <Text style={{ color: '#fff', display: 'flex', alignItems: 'center' }}>
-                        <HomeOutlined style={{ marginRight: '8px' }} />
-                        {candidateData.address}
-                      </Text>
-                    </Col>
-                  )}
-                </Row>
-              </Col>
-            </Row>
-          </Col>
+          {/* Name and Title */}
+          {candidateData?.fullName && (
+            <Title level={2} style={{ 
+              color: '#f4a261', 
+              margin: '0 0 5px 0', 
+              fontSize: '24px',
+              fontWeight: 'bold',
+              textTransform: 'uppercase'
+            }}>
+              {candidateData.fullName}
+            </Title>
+          )}
+          {candidateData?.title && (
+            <Text style={{ 
+              color: '#264653',
+              fontSize: '14px',
+              textTransform: 'uppercase'
+            }}>
+              {candidateData.title}
+            </Text>
+          )}
 
-          {/* Main Content */}
-          <Col span={24}>
-            <Row gutter={[40, 40]}>
-              {/* Left Column */}
-              <Col span={16}>
-                {/* About Section - Fixed height */}
-                <div style={{ marginBottom: '40px', height: '180px' }}>
-                  <Title level={4} style={{ 
-                    color: '#1890ff',
-                    borderBottom: '2px solid #1890ff',
-                    paddingBottom: '8px',
-                    marginBottom: '20px'
-                  }}>
-                    GIỚI THIỆU
-                  </Title>
-                  <div 
-                    className="ql-editor"
-                    dangerouslySetInnerHTML={sanitizeHTML(candidateData?.description)}
-                    style={{ 
-                      fontSize: '14px', 
-                      lineHeight: '1.6',
-                      color: '#595959',
-                      maxHeight: '120px',
-                      overflow: 'hidden'
-                    }}
-                  />
-                </div>
+          <Divider style={{ borderColor: '#f4a261', margin: '20px 0' }} />
 
-                {/* Work Experience - Scrollable */}
-                <div style={{ marginBottom: '40px', maxHeight: '350px', overflow: 'auto' }}>
-                  <Title level={4} style={{ 
-                    color: '#1890ff',
-                    borderBottom: '2px solid #1890ff',
-                    paddingBottom: '8px',
-                    marginBottom: '20px'
-                  }}>
-                    KINH NGHIỆM LÀM VIỆC
-                  </Title>
-                  {workHistory.slice(0, 4).map((work, index) => (
-                    <div key={work.id} style={{ 
-                      marginBottom: '25px',
-                      position: 'relative',
-                      paddingLeft: '20px'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: '8px',
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#1890ff'
-                      }} />
-                      <Title level={5} style={{ margin: '0 0 5px' }}>
-                        {work.position}
-                      </Title>
-                      <Text strong style={{ display: 'block', marginBottom: '5px', color: '#1890ff' }}>
-                        {work.companyName}
-                      </Text>
-                      <Text type="secondary" style={{ display: 'block', marginBottom: '10px', fontSize: '12px' }}>
-                        {new Date(work.startDate).toLocaleDateString('vi-VN')} - 
-                        {work.endDate ? new Date(work.endDate).toLocaleDateString('vi-VN') : 'Hiện tại'}
-                      </Text>
-                      <div 
-                        className="ql-editor"
-                        dangerouslySetInnerHTML={sanitizeHTML(work.description)}
-                        style={{ 
-                          fontSize: '14px', 
-                          lineHeight: '1.6',
-                          color: '#595959',
-                          maxHeight: '80px',
-                          overflow: 'hidden'
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
+          {/* Personal Info */}
+          <div>
+            <Title level={4} style={{ 
+              color: '#f4a261', 
+              fontSize: '16px',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              marginBottom: '15px'
+            }}>
+              Thông tin cá nhân
+            </Title>
+            {candidateData?.dob && (
+              <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CalendarOutlined style={{ color: '#f4a261', marginRight: '8px' }} />
+                <Text style={{ color: '#264653', fontSize: '12px' }}>{new Date(candidateData.dob).toLocaleDateString('vi-VN')}</Text>
+              </div>
+            )}
+            {candidateData?.phone && (
+              <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PhoneOutlined style={{ color: '#f4a261', marginRight: '8px' }} />
+                <Text style={{ color: '#264653', fontSize: '12px' }}>{candidateData.phone}</Text>
+              </div>
+            )}
+            {candidateData?.email && (
+              <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+impl                <MailOutlined style={{ color: '#f4a261', marginRight: '8px' }} />
+                <Text style={{ color: '#264653', fontSize: '12px' }}>{candidateData.email}</Text>
+              </div>
+            )}
+            {candidateData?.facebook && (
+              <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <FacebookOutlined style={{ color: '#f4a261', marginRight: '8px' }} />
+                <Text style={{ color: '#264653', fontSize: '12px' }}>{candidateData.facebook}</Text>
+              </div>
+            )}
+            {candidateData?.address && (
+              <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <EnvironmentOutlined style={{ color: '#f4a261', marginRight: '8px' }} />
+                <Text style={{ color: '#264653', fontSize: '12px' }}>{candidateData.address}</Text>
+              </div>
+            )}
+          </div>
 
-                {/* Education - Fixed height */}
-                <div style={{ height: '160px' }}>
-                  <Title level={4} style={{ 
-                    color: '#1890ff',
-                    borderBottom: '2px solid #1890ff',
-                    paddingBottom: '8px',
-                    marginBottom: '20px'
-                  }}>
-                    HỌC VẤN
-                  </Title>
-                  <Title level={5} style={{ margin: '0 0 10px' }}>
-                    {candidateData?.educationLevel}
-                  </Title>
-                  <div 
-                    className="ql-editor"
-                    dangerouslySetInnerHTML={sanitizeHTML(candidateData?.educationDescription)}
-                    style={{ 
-                      fontSize: '14px', 
-                      lineHeight: '1.6',
-                      color: '#595959',
-                      maxHeight: '80px',
-                      overflow: 'hidden'
-                    }}
-                  />
-                </div>
-              </Col>
+          {/* Skills */}
+          <div style={{ marginTop: '20px' }}>
+            <Title level={4} style={{ 
+              color: '#f4a261', 
+              fontSize: '16px',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              marginBottom: '15px'
+            }}>
+              Kỹ năng
+            </Title>
+            {safeSkills.map((skill) => (
+              <div
+                key={skill.id}
+                style={{
+                  fontSize: '12px',
+                  color: '#5c4033', // Deep brown for better contrast
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#fce4d6', // Soft peach background
+                  padding: '5px',
+                  borderRadius: '5px'
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '50%',
+                    backgroundColor: PROFICIENCY_LEVELS[skill.proficiencyLevel]?.color || '#8c8c8c',
+                    marginRight: '8px'
+                  }}
+                />
+                {skill.skillName} ({PROFICIENCY_LEVELS[skill.proficiencyLevel]?.label || 'Không xác định'})
+              </div>
+            ))}
+          </div>
+        </Col>
 
-              {/* Right Column - Skills */}
-              <Col span={8}>
-                <Title level={4} style={{ 
-                  color: '#1890ff',
-                  borderBottom: '2px solid #1890ff',
-                  paddingBottom: '8px',
+        {/* Right Column - Sections */}
+        <Col span={16} style={{ paddingLeft: '20px', backgroundColor: '#fff', padding: '20px', borderRadius: '10px' }}>
+          {/* Career Objective */}
+          {candidateData?.description && (
+            <div style={{ marginBottom: '30px' }}>
+              <Title level={4} style={{ 
+                color: '#f4a261', 
+                fontSize: '16px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                marginBottom: '15px'
+              }}>
+                Mục tiêu nghề nghiệp
+              </Title>
+              <div 
+                className="ql-editor"
+                dangerouslySetInnerHTML={sanitizeHTML(candidateData.description)}
+                style={{ fontSize: '13px', lineHeight: '1.6', color: '#264653' }}
+              />
+            </div>
+          )}
+
+          {/* Education */}
+          {candidateData?.educationDescription && (
+            <div style={{ marginBottom: '30px' }}>
+              <Title level={4} style={{ 
+                color: '#f4a261', 
+                fontSize: '16px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                marginBottom: '15px'
+              }}>
+                Học vấn
+              </Title>
+              <div 
+                className="ql-editor"
+                dangerouslySetInnerHTML={sanitizeHTML(candidateData.educationDescription)}
+                style={{ fontSize: '13px', lineHeight: '1.6', color: '#264653' }}
+              />
+            </div>
+          )}
+
+          {/* Work Experience */}
+          {workHistory && workHistory.length > 0 && (
+            <div style={{ marginBottom: '30px' }}>
+              <Title level={4} style={{ 
+                color: '#f4a261', 
+                fontSize: '16px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                marginBottom: '15px'
+              }}>
+                Kinh nghiệm làm việc
+              </Title>
+              {workHistory.slice(0, 4).map((work, index) => (
+                <div key={work.id} style={{ 
                   marginBottom: '20px'
                 }}>
-                  KỸ NĂNG
-                </Title>
-                <div style={{ maxHeight: '600px', overflow: 'auto' }}>
-                  {skills.slice(0, 8).map(skill => (
-                    <div key={skill.id} style={{ marginBottom: '25px' }}>
-                      <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        marginBottom: '8px' 
-                      }}>
-                        <Text strong>{skill.skillName}</Text>
-                        <Text type="secondary">{PROFICIENCY_LEVELS[skill.proficiencyLevel]?.label}</Text>
-                      </div>
-                      <Progress 
-                        percent={PROFICIENCY_LEVELS[skill.proficiencyLevel]?.percent}
-                        strokeColor={PROFICIENCY_LEVELS[skill.proficiencyLevel]?.color}
-                        showInfo={false}
-                        size="small"
-                      />
-                    </div>
-                  ))}
+                  <Text strong style={{ fontSize: '14px', color: '#264653', display: 'block', marginBottom: '5px' }}>
+                    {work.position} - {work.companyName}
+                  </Text>
+                  <Text style={{ fontSize: '12px', color: '#264653', display: 'block', marginBottom: '5px' }}>
+                    {new Date(work.startDate).toLocaleDateString('vi-VN')} - 
+                    {work.endDate ? new Date(work.endDate).toLocaleDateString('vi-VN') : 'Hiện tại'}
+                  </Text>
+                  {work.description && (
+                    <div 
+                      className="ql-editor"
+                      dangerouslySetInnerHTML={sanitizeHTML(work.description)}
+                      style={{ fontSize: '13px', lineHeight: '1.6', color: '#264653' }}
+                    />
+                  )}
                 </div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </div>
+              ))}
+            </div>
+          )}
+        </Col>
+      </Row>
     </div>
   );
 };
 
-export default ProfessionalTemplate; 
+export default ProfessionalTemplate;
