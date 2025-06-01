@@ -22,7 +22,7 @@ class WebSocketService {
       }, this.connectionTimeout);
 
       try {
-        const socket = new SockJS(`http://localhost:8080/ws`);
+        const socket = new SockJS(`https://cvhubmth-30a934eec9be.herokuapp.com/ws`);
         this.stompClient = new Client({
           webSocketFactory: () => socket,
           debug: function (str) {
