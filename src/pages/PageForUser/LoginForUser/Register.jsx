@@ -31,7 +31,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const GOOGLE_AUTH_URL = `https://localhost:8080/oauth2/authorization/google`;
+  const GOOGLE_AUTH_URL = `https://cvhubmth-30a934eec9be.herokuapp.com/oauth2/authorization/google`;
   const FACEBOOK_AUTH_URL = `http://localhost:8080/oauth2/authorization/facebook`;
   const LINKEDIN_AUTH_URL = `http://localhost:8080/oauth2/authorization/linkedin`;
 
