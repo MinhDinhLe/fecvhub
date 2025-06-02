@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Select, Button, Typography, Popconfirm, Space, Input, Row, Col, Card, Divider, Badge, Tag } from 'antd';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
@@ -19,6 +19,8 @@ import {
 import { getAllIndustries } from '../../../api/industryApi';
 import { getAllProfessions } from '../../../api/professionApi';
 import PropTypes from 'prop-types';
+import { AuthContext } from '../../auth/AuthProvider';
+import { getCandidateProfileByEmail } from '../../../api/candidateApi';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -26,6 +28,7 @@ const { Title } = Typography;
 const FilterJobs = ({ onFiltersChange }) => {
   const location = useLocation();
   const selectedLocation = location.state?.selectedLocation;
+  const { user } = useContext(AuthContext);
   
   const [filters, setFilters] = useState({
     searchText: '',
@@ -45,6 +48,7 @@ const FilterJobs = ({ onFiltersChange }) => {
   const [professions, setProfessions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [profile, setProfile] = useState(null);
   
   const activeFilterCount = Object.values(filters).filter(value => value !== undefined && value !== '').length;
 
@@ -79,6 +83,39 @@ const FilterJobs = ({ onFiltersChange }) => {
 
     fetchData();
   }, []);
+
+  // Lấy profile ứng viên khi đã đăng nhập
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user && user.email) {
+        try {
+          const data = await getCandidateProfileByEmail(user.email);
+          setProfile(data);
+        } catch (error) {
+          // Không cần xử lý lỗi ở đây
+        }
+      }
+    };
+    fetchProfile();
+  }, [user]);
+
+  // Set default ngành nghề theo profile user (nếu có)
+  useEffect(() => {
+    if (profile && industries.length > 0) {
+      // Tìm industry theo industryName hoặc industryId
+      let defaultIndustry = undefined;
+      if (profile.industryName) {
+        const found = industries.find(ind => ind.name === profile.industryName);
+        if (found) defaultIndustry = found.name;
+      } else if (profile.industryId) {
+        const found = industries.find(ind => ind.id === profile.industryId);
+        if (found) defaultIndustry = found.name;
+      }
+      if (defaultIndustry && !filters.industry) {
+        setFilters(prev => ({ ...prev, industry: defaultIndustry }));
+      }
+    }
+  }, [profile, industries]);
 
   const resetAllFilters = () => {
     setFilters({
